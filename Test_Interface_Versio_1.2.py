@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
-from airport import *
+
+from Projecte.airport import *
 airports = []
 def cargar():
     global airports
@@ -24,9 +25,17 @@ def mostrar():
         PrintAirport(airports[i])
         i = i + 1
     label.config(text="Printed in console")
+def plot_airports():
+    if not airports:
+        messagebox.showinfo("Info", "Carga aeropuertos primero")
+        return
+    PlotAirports(airports)
 def guardar():
-    SaveSchengenAirports(airports, "output.txt")
+    SaveSchengenAirports(airports, "../Exercicis/output.txt")
     label.config(text="Saved file")
+def mapa():
+    MapAirports(airports)
+    label.config(text="KML created")
 ventana = tk.Tk()
 ventana.title("Airport Manager")
 ventana.geometry("300x400")
@@ -50,6 +59,9 @@ tk.Button(frame_buttons, text="Add Airport", width=15, command=añadir).pack(pad
 tk.Button(frame_buttons, text="Remove Airport", width=15, command=eliminar).pack(pady=2)
 tk.Button(frame_buttons, text="Show Airports", width=15, command=mostrar).pack(pady=2)
 tk.Button(frame_buttons, text="Save Schengen", width=15, command=guardar).pack(pady=2)
+tk.Button(frame_buttons, text="Map (Google Earth)", width=15, command=mapa).pack(pady=2)
+tk.Button(frame_buttons, text="Plot", width=15, command=plot_airports).pack(pady=2)
 label = tk.Label(ventana, text="Ready", fg="blue")
 label.pack(pady=10)
+
 ventana.mainloop()
