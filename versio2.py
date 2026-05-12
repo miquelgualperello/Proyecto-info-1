@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import math
 import sys
+import versio1
 
 class Aircraft:
     def __init__(self, id, origin, time, company):
@@ -10,12 +11,6 @@ class Aircraft:
         self.company = company
 
 
-class Airport:
-    def __init__(self, code, lat, lon):
-        self.code = code
-        self.lat = lat
-        self.lon = lon
-        self.schengen = False
 
 def LoadArrivals(filename):
     aircraft_list = []
@@ -26,9 +21,10 @@ def LoadArrivals(filename):
                     continue
                 parts = line.split()
                 if len(parts) == 4:
-                    aircraft_list.append(
-                        Aircraft(parts[0], parts[1], parts[2], parts[3])
-                    )
+                    a=parts[2].split(":")
+                    if a[0]<="23" and a[0]>="00":
+                        if a[1]<="59" and a[1]>="00":
+                            aircraft_list.append(Aircraft(parts[0], parts[1], parts[2], parts[3]))
     except Exception as e:
         print(f"Error al cargar el archivo: {e}")
         return []
