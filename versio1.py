@@ -38,25 +38,35 @@ def convert_coord(coord):
     if direction == 'S' or direction == 'W':
         decimal = -decimal
     return decimal
+
+
 def LoadAirports(filename):
     airports = []
     try:
-        f = open(filename, "r")
-        f.readline()
-        while True:
-            line = f.readline()
-            if line == "":
-                break
-            parts = line.split()
-            code = parts[0]
-            lat = convert_coord(parts[1])
-            lon = convert_coord(parts[2])
-            a = Airport(code, lat, lon)
-            SetSchengen(a)
-            airports.append(a)
-        f.close()
-    except:
-        return []
+        with open(filename, "r") as f:
+            f.readline()  # Omitimos la primera línea (cabecera)
+            for line in f:
+                # Si la línea está vacía, pasamos a la siguiente
+                if line.strip() == "":
+                    continue
+                try:
+                    parts = line.split()
+                    # Verificamos que tenga al menos 3 elementos para evitar errores de índice
+                    if len(parts) >= 3:
+                        # Tomamos las últimas 3 partes por si hay texto extra al inicio
+                        code = parts[-3]
+                        lat = convert_coord(parts[-2])
+                        lon = convert_coord(parts[-1])
+
+                        a = Airport(code, lat, lon)
+                        SetSchengen(a)
+                        airports.append(a)
+                except Exception:
+                    # Si hay un error (ej. formato de coordenada incorrecto),
+                    # ignoramos esta línea y el bucle continúa con la siguiente.
+                    continue
+    except Exception as e:
+        print(f"Error general al leer el archivo {filename}: {e}")
     return airports
 def SaveSchengenAirports(airports, filename):
     if len(airports) == 0:

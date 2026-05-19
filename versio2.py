@@ -11,23 +11,33 @@ class Aircraft:
         self.company = company
 
 
-
 def LoadArrivals(filename):
     aircraft_list = []
     try:
         with open(filename, "r") as f:
             for line in f:
-                if "AIRCRAFT" in line:
+                # Ignoramos la cabecera o líneas vacías
+                if "AIRCRAFT" in line or line.strip() == "":
                     continue
-                parts = line.split()
-                if len(parts) == 4:
-                    a=parts[2].split(":")
-                    if a[0]<="23" and a[0]>="00":
-                        if a[1]<="59" and a[1]>="00":
-                            aircraft_list.append(Aircraft(parts[0], parts[1], parts[2], parts[3]))
+                try:
+                    parts = line.split()
+                    # Nos aseguramos de tener al menos 4 elementos
+                    if len(parts) >= 4:
+                        # Tomamos los últimos 4 elementos por seguridad
+                        id_plane = parts[-4]
+                        origin = parts[-3]
+                        time = parts[-2]
+                        company = parts[-1]
+
+                        # Validamos que la hora tenga el formato correcto
+                        a = time.split(":")
+                        if len(a) == 2 and "00" <= a[0] <= "23" and "00" <= a[1] <= "59":
+                            aircraft_list.append(Aircraft(id_plane, origin, time, company))
+                except Exception:
+                    # Cualquier error procesando la línea hace que la saltemos limpiamente
+                    continue
     except Exception as e:
-        print(f"Error al cargar el archivo: {e}")
-        return []
+        print(f"Error general al cargar el archivo {filename}: {e}")
     return aircraft_list
 
 
@@ -199,7 +209,6 @@ def MapFlights(aircrafts, airports):
         print("Fitxer flights.kml generat correctament.")
     except Exception as e:
         print("Error:", e)
-
 
 import os
 import subprocess
