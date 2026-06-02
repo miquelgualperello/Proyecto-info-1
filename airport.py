@@ -5,11 +5,10 @@ class Airport:
         self.lat = lat
         self.lon = lon
         self.schengen = False
-def IsSchengenAirport(code):
+def IsSchengenAirport(code): #comprova si un aeroport es del espai schengen o no
     if code == "":
         return False
-    schengen = ['LO','EB','LK','LC','EK','EE','EF','LF','ED','LG','EH','LH',
-                'BI','LI','EV','EY','EL','LM','EN','EP','LP','LZ','LJ','LE','ES','LS']
+    schengen = ['LO', 'EB', 'LK', 'EK', 'EE', 'EF', 'LF', 'ED', 'ET', 'LG', 'EH', 'LH', 'BI', 'LI', 'EV', 'EY', 'EL','LM', 'EN', 'EP', 'LP', 'LZ', 'LJ', 'LE', 'ES', 'LS']
     prefix = code[0] + code[1]
     i = 0
     while i < len(schengen):
@@ -17,14 +16,14 @@ def IsSchengenAirport(code):
             return True
         i = i + 1
     return False
-def SetSchengen(airport):
+def SetSchengen(airport): #crid la funcio anterior de is schengen airport i li posa el atribut de si o no al aeroport
     airport.schengen = IsSchengenAirport(airport.code)
-def PrintAirport(airport):
+def PrintAirport(airport): #mostra la informacio dels aeroports
     print("Code:", airport.code)
     print("Lat:", airport.lat)
     print("Lon:", airport.lon)
     print("Schengen:", airport.schengen)
-def convert_coord(coord):
+def convert_coord(coord): #canvia les cordenades de texten numeros decimals i di son sud o west canvia el signe
     direction = coord[0]
     if len(coord) == 7:
         deg = int(coord[1:3])
@@ -38,37 +37,27 @@ def convert_coord(coord):
     if direction == 'S' or direction == 'W':
         decimal = -decimal
     return decimal
-
-
-def LoadAirports(filename):
+def LoadAirports(filename):#obre un fitxer amb aeroports i converteix en una llista i determina si son schengen o no
     airports = []
     try:
-        with open(filename, "r") as f:
-            f.readline()  # Omitimos la primera línea (cabecera)
-            for line in f:
-                # Si la línea está vacía, pasamos a la siguiente
-                if line.strip() == "":
-                    continue
-                try:
-                    parts = line.split()
-                    # Verificamos que tenga al menos 3 elementos para evitar errores de índice
-                    if len(parts) >= 3:
-                        # Tomamos las últimas 3 partes por si hay texto extra al inicio
-                        code = parts[-3]
-                        lat = convert_coord(parts[-2])
-                        lon = convert_coord(parts[-1])
-
-                        a = Airport(code, lat, lon)
-                        SetSchengen(a)
-                        airports.append(a)
-                except Exception:
-                    # Si hay un error (ej. formato de coordenada incorrecto),
-                    # ignoramos esta línea y el bucle continúa con la siguiente.
-                    continue
-    except Exception as e:
-        print(f"Error general al leer el archivo {filename}: {e}")
+        f = open(filename, "r")
+        f.readline()
+        while True:
+            line = f.readline()
+            if line == "":
+                break
+            parts = line.split()
+            code = parts[0]
+            lat = convert_coord(parts[1])
+            lon = convert_coord(parts[2])
+            a = Airport(code, lat, lon)
+            SetSchengen(a)
+            airports.append(a)
+        f.close()
+    except:
+        return []
     return airports
-def SaveSchengenAirports(airports, filename):
+def SaveSchengenAirports(airports, filename): #Filtra la llista d'aeroports i guarda en un fitxer de text només aquells que formen part de l'espai Schengen, emmagatzemant el seu codi, latitud i longitud
     if len(airports) == 0:
         return -1
     f = open(filename, "w")
@@ -80,14 +69,14 @@ def SaveSchengenAirports(airports, filename):
             f.write(line)
         i = i + 1
     f.close()
-def AddAirport(airports, airport):
+def AddAirport(airports, airport): #afegeix unnou aeroporten la llista pero tambe comprova si ja existeix
     i = 0
     while i < len(airports):
         if airports[i].code == airport.code:
             return
         i = i + 1
     airports.append(airport)
-def RemoveAirport(airports, code):
+def RemoveAirport(airports, code): #busca un aeroport i si el troba el elimina si no retorna -1
     i = 0
     while i < len(airports):
         if airports[i].code == code:
@@ -99,7 +88,7 @@ def RemoveAirport(airports, code):
             return
         i = i + 1
     return -1
-def PlotAirports(airports):
+def PlotAirports(airports): # mostra un plot amb els aeroports schengen i no schengen
     if not airports:
         print("No hay aeropuertos para mostrar")
         return
@@ -122,7 +111,7 @@ def PlotAirports(airports):
     plt.legend()
     plt.tight_layout()
     plt.show()
-def MapAirports(airports):
+def MapAirports(airports): #crea un fitxer kml i coloca cada punt de el aeroport en ell per despres obrirlo en google earth
     f = open("airports.kml", "w")
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
     f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
