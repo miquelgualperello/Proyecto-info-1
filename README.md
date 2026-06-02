@@ -18,4 +18,4 @@ Video: https://youtu.be/fJk7VDCZZo8
 ## **Versio 4**
 A la versió 4, s'incorporaran els enlairaments a la versió 3 i s'haurà de dissenyar un sistema que vagi assignant i alliberant portes dels avions que arribin o se'n vagin.
 
-Video: 
+Video: https://youtu.be/r3rcr3W_RaU
